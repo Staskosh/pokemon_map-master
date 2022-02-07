@@ -1,15 +1,13 @@
-from django.db import models  # noqa F401
+from django.db import models
 
-# your models here
+
 class Pokemon(models.Model):
     title_ru = models.CharField(max_length=200, verbose_name='Название на русском')
     title_en = models.CharField(max_length=200,
                                 blank=True,
-                                null=True,
                                 verbose_name='Название на английском')
     title_jp = models.CharField(max_length=200,
                                 blank=True,
-                                null=True,
                                 verbose_name='Название на японском'
                                 )
     previous_evolution = models.ForeignKey('self',
@@ -20,7 +18,6 @@ class Pokemon(models.Model):
                                            verbose_name='Предыдущая эволюция'
                                            )
     description = models.TextField(blank=True,
-                                   null=True,
                                    verbose_name='Описание'
                                    )
     image = models.ImageField(upload_to='pokemons',
@@ -34,7 +31,6 @@ class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon,
                                 on_delete=models.CASCADE,
                                 blank=True,
-                                null=True,
                                 verbose_name='Покемон'
                                 )
     lat = models.FloatField(blank=True,
