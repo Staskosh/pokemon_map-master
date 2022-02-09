@@ -23,6 +23,24 @@
 ```sh
 pip install -r requirements.txt
 ```
+Cохраните состояния моделей в файле миграции:
+```sh
+python3 manage.py makemigrations
+```
+Примените миграции:
+```sh
+python3 manage.py migrate
+```
+Создайте суперпользователя:
+```sh
+python3 manage.py createsuperuser
+```
+Загрузите данные о покемонах в бд:
+```sh
+python3 manage.py load_to_db
+```
+Загрузите фото покемонов в соответсвующие поля в админке.
+
 
 Запустите разработческий сервер
 
