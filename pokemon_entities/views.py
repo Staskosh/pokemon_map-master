@@ -1,5 +1,4 @@
 import folium
-import json
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
@@ -57,8 +56,8 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    pokemons_db = Pokemon.objects.all()
-    for pokemon in pokemons_db:
+    pokemons = Pokemon.objects.all()
+    for pokemon in pokemons:
         if pokemon.id == int(pokemon_id):
             requested_pokemon = pokemon
             break
@@ -66,13 +65,14 @@ def show_pokemon(request, pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    requested_pokemon_entities = PokemonEntity.objects.filter(pokemon__title_ru__contains=requested_pokemon)
-    for pokemon_entity in requested_pokemon_entities:
-        add_pokemon(
-            folium_map, pokemon_entity.lat,
-            pokemon_entity.lon,
-            request.build_absolute_uri(pokemon_entity.pokemon.image.url)
-        )
+    pokemon_entities = PokemonEntity.objects.all()
+    for pokemon_entity in pokemon_entities:
+        if pokemon_entity.pokemon.title_ru == requested_pokemon.title_ru:
+            add_pokemon(
+                folium_map, pokemon_entity.lat,
+                pokemon_entity.lon,
+                request.build_absolute_uri(pokemon_entity.pokemon.image.url)
+            )
     pokemon = Pokemon.objects.get(title_ru__contains=requested_pokemon)
     if pokemon.image:
         pokemon_on_page = {
@@ -86,12 +86,8 @@ def show_pokemon(request, pokemon_id):
         if pokemon.previous_evolution:
             pokemon_on_page['previous_evolution'] = pokemon.previous_evolution
 
-        # for pokemon_initial in pokemons:
-        #     if pokemon_initial['title_ru'] == pokemon.title_ru:
-        #         if 'next_evolution' in pokemon_initial:
-        #             evolution_to = pokemon_initial['next_evolution']
-        #             related_pokemon = Pokemon.next_evolution.get(title_ru__contains=evolution_to['title_ru'])
-        #             pokemon_on_page['next_evolution'] = related_pokemon
+        if pokemon.next_evolution.first():
+            pokemon_on_page['next_evolution'] = pokemon.next_evolution.first()
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(),

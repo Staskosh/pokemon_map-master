@@ -20,7 +20,8 @@ class Command(BaseCommand):
             )
             if 'previous_evolution' in pokemon:
                 actual_pokemon = Pokemon.objects.get(title_ru__contains=pokemon['title_ru'])
-                actual_pokemon.previous_evolution = Pokemon.objects.get(title_ru__contains=pokemon['previous_evolution']['title_ru'])
+                previous_evolution = pokemon['previous_evolution']['title_ru']
+                actual_pokemon.previous_evolution = Pokemon.objects.get(title_ru__contains=previous_evolution)
                 actual_pokemon.save()
 
             coordinates = []
