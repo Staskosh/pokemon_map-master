@@ -26,22 +26,6 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
 
 
 def show_all_pokemons(request):
-    with open('pokemon_entities/pokemons.json', encoding='utf-8') as database:
-        pokemons = json.load(database)['pokemons']
-    pokemons_with_coordinates = {}
-    for pokemon in pokemons:
-        coordinates = []
-        for pokemon_entity in pokemon['entities']:
-            coordinates.append([pokemon_entity['lat'], pokemon_entity['lon']])
-        pokemons_with_coordinates[pokemon['title_ru']] = coordinates
-    for pokemon_title, pokemon_coordinates in pokemons_with_coordinates.items():
-        pokemon = Pokemon.objects.get(title_ru__contains=pokemon_title)
-        for pokemon_coordinate in pokemon_coordinates:
-            PokemonEntity.objects.create(
-                pokemon = pokemon,
-                lat = pokemon_coordinate[0],
-                lon = pokemon_coordinate[1]
-            )
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     pokemon_entities = PokemonEntity.objects.all()
     for pokemon_entity in pokemon_entities:
@@ -73,8 +57,6 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    with open('pokemon_entities/pokemons.json', encoding='utf-8') as database:
-        pokemons = json.load(database)['pokemons']
     pokemons_db = Pokemon.objects.all()
     for pokemon in pokemons_db:
         if pokemon.id == int(pokemon_id):
@@ -102,14 +84,14 @@ def show_pokemon(request, pokemon_id):
             'description': pokemon.description,
         }
         if pokemon.previous_evolution:
-            pokemon_on_page['previous_evolution'] =  pokemon.previous_evolution
+            pokemon_on_page['previous_evolution'] = pokemon.previous_evolution
 
-        for pokemon_initial in pokemons:
-            if pokemon_initial['title_ru'] == pokemon.title_ru:
-                if 'next_evolution' in pokemon_initial:
-                    evolution_to = pokemon_initial['next_evolution']
-                    related_pokemon = Pokemon.objects.select_related().get(title_ru__contains=evolution_to['title_ru'])
-                    pokemon_on_page['next_evolution'] = related_pokemon
+        # for pokemon_initial in pokemons:
+        #     if pokemon_initial['title_ru'] == pokemon.title_ru:
+        #         if 'next_evolution' in pokemon_initial:
+        #             evolution_to = pokemon_initial['next_evolution']
+        #             related_pokemon = Pokemon.next_evolution.get(title_ru__contains=evolution_to['title_ru'])
+        #             pokemon_on_page['next_evolution'] = related_pokemon
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(),

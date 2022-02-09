@@ -11,7 +11,7 @@ class Pokemon(models.Model):
                                 verbose_name='Название на японском'
                                 )
     previous_evolution = models.ForeignKey('self',
-                                           on_delete=models.PROTECT,
+                                           on_delete=models.CASCADE,
                                            related_name='next_evolution',
                                            blank=True,
                                            null=True,
