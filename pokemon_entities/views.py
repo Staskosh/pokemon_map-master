@@ -57,14 +57,12 @@ def show_pokemon(request, pokemon_id):
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    pokemon_entities = PokemonEntity.objects.all()
-    for pokemon_entity in pokemon_entities:
-        if pokemon_entity.pokemon.title_ru == requested_pokemon.title_ru:
-            add_pokemon(
-                folium_map, pokemon_entity.lat,
-                pokemon_entity.lon,
-                request.build_absolute_uri(pokemon_entity.pokemon.image.url)
-            )
+    pokemon_entities = requested_pokemon.pokemon_entities.first()
+    add_pokemon(
+        folium_map, pokemon_entities.lat,
+        pokemon_entities.lon,
+        request.build_absolute_uri(pokemon_entities.pokemon.image.url)
+    )
     if requested_pokemon.image:
         pokemon_on_page = {
             'pokemon_id': requested_pokemon.id,

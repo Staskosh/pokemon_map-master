@@ -31,7 +31,7 @@ class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon,
                                 on_delete=models.PROTECT,
                                 blank=True,
-                                related_name='pokemon',
+                                related_name='pokemon_entities',
                                 verbose_name='Покемон'
                                 )
     lat = models.FloatField(blank=True,
