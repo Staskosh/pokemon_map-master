@@ -72,11 +72,11 @@ def show_pokemon(request, pokemon_id):
             'title_jp': requested_pokemon.title_jp,
             'description': requested_pokemon.description,
         }
-        if requested_pokemon.previous_evolution:
-            pokemon_on_page['previous_evolution'] = requested_pokemon.previous_evolution
+    if requested_pokemon.previous_evolution:
+        pokemon_on_page['previous_evolution'] = requested_pokemon.previous_evolution
 
-        if requested_pokemon.next_evolution.first():
-            pokemon_on_page['next_evolution'] = requested_pokemon.next_evolution.first()
+    if requested_pokemon.next_evolution.first():
+        pokemon_on_page['next_evolution'] = requested_pokemon.next_evolution.first()
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(),
