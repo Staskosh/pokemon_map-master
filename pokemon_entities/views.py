@@ -28,10 +28,14 @@ def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     pokemon_entities = PokemonEntity.objects.all()
     for pokemon_entity in pokemon_entities:
+        if pokemon_entity.pokemon.image:
+            img_url = request.build_absolute_uri(pokemon_entity.pokemon.image.url)
+        else:
+            img_url = DEFAULT_IMAGE_URL
         add_pokemon(
             folium_map, pokemon_entity.lat,
             pokemon_entity.lon,
-            request.build_absolute_uri(pokemon_entity.pokemon.image.url)
+            img_url
         )
     pokemons_db = Pokemon.objects.all()
     pokemons_on_page = []
@@ -39,7 +43,7 @@ def show_all_pokemons(request):
         if pokemon.image:
             img_url = request.build_absolute_uri(pokemon.image.url)
         else:
-            img_url = pokemon.image
+            img_url = DEFAULT_IMAGE_URL
 
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
@@ -57,21 +61,26 @@ def show_pokemon(request, pokemon_id):
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    pokemon_entities = requested_pokemon.entities.first()
-    add_pokemon(
-        folium_map, pokemon_entities.lat,
-        pokemon_entities.lon,
-        request.build_absolute_uri(pokemon_entities.pokemon.image.url)
-    )
-    if requested_pokemon.image:
-        pokemon_on_page = {
-            'pokemon_id': requested_pokemon.id,
-            'img_url': request.build_absolute_uri(requested_pokemon.image.url),
-            'title_ru': requested_pokemon.title_ru,
-            'title_en': requested_pokemon.title_en,
-            'title_jp': requested_pokemon.title_jp,
-            'description': requested_pokemon.description,
-        }
+    pokemon_entities = requested_pokemon.entities.all()
+    for pokemon_entity in pokemon_entities:
+        if requested_pokemon.image:
+            img_url = request.build_absolute_uri(requested_pokemon.image.url)
+        else:
+            img_url = DEFAULT_IMAGE_URL
+        add_pokemon(
+            folium_map, pokemon_entity.lat,
+            pokemon_entity.lon,
+            img_url
+        )
+
+    pokemon_on_page = {
+        'pokemon_id': requested_pokemon.id,
+        'img_url': img_url,
+        'title_ru': requested_pokemon.title_ru,
+        'title_en': requested_pokemon.title_en,
+        'title_jp': requested_pokemon.title_jp,
+        'description': requested_pokemon.description,
+    }
     if requested_pokemon.previous_evolution:
         pokemon_on_page['previous_evolution'] = requested_pokemon.previous_evolution
 
